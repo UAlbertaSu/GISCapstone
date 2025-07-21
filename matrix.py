@@ -1,17 +1,26 @@
 import openpyxl
+from openpyxl import load_workbook
 
-def processStudents(wb):
+def processSheet(wb):
     # parse the student ID, city and their address in dictionary
-    ws = wb.active
-    studentDict = {}
-    # testing
-    print(ws)
+    
+    sheet = wb.active
+    for row in sheet.iter_rows(values_only = True):
+        print(row)
 
+    
 def main():
-    studentWb = openpyxl.Workbook(r"/Users/stevesu/Downloads/Classlist.xlsx")
-    hostListWb = openpyxl.Workbook(r"/Users/stevesu/Downloads/ECEDHostList.xlsx")
+    studentWb = load_workbook("C:\\Users\steve\SAIT\Sem2\\Capstone\\Inputs\Students\\ModifiedClassList.xlsx")
+    hostListWb = load_workbook("C:\\Users\steve\SAIT\Sem2\\Capstone\\Inputs\Locations\\ModifiedHostList.xlsx")
+
     # parse the origins (student address) 
-    processStudents(studentWb)
+    print("Student Location \n")
+    processSheet(studentWb)
+    print("Host Location \n")
+
+    processSheet(hostListWb)
+
+
 
 
 main()
