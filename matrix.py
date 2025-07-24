@@ -2,18 +2,19 @@ import openpyxl
 from openpyxl import load_workbook
 import sys # Delete in final
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import time
 import json
 import os
 from dotenv import load_dotenv
 
+
 def get_next_monday_8am():
-    now = datetime.now()
-    tomorrow_8am = (now + timedelta(days=1)).replace(
-        hour=8, minute=0, second=0, microsecond=0
-    )
-    return int(time.mktime(tomorrow_8am.timetuple()))
+    now = datetime.now(timezone.utc)
+    days_until_monday = (7 - now.weekday()) % 7
+    next_monday = now + timedelta(days=days_until_monday)
+    nextMonday_MT = next_monday.astimezone()
+    return nextMonday_MT.replace(hour=8, minute=0, second=0, microsecond=0).isoformat()
 
 def get_distance(origin, destination):
     
@@ -46,9 +47,9 @@ def get_distance(origin, destination):
         "travelMode": "TRANSIT",
         "transitPreferences": {
             "routingPreference": "LESS_WALKING",
-            "allowedTravelModes": ["BUS", "SUBWAY", "TRAIN"]
+            "allowedTravelModes": ["BUS", "RAIL"]
         },
-        # "departureTime": get_next_monday_8am()
+        "departureTime": get_next_monday_8am()
     }
 
     # Send Request
@@ -87,30 +88,30 @@ def main():
         
     studentDict = {}
     hostDict = {}
+    
     # parse the origins (student address) 
     print("Student Location \n")
     studentDict = processSheet(studentWb, studentDict)
     print(studentDict)
     print('\n')
     print("Host Location \n")
+    
     # parse the destination and attributes
     hostDict = processSheet(hostListWb, hostDict)
     print(hostDict)
     print('\n')
+    
+    # call API
     for k,v in studentDict.items():
         origin = (v[0]+" "+ v[1])
         for key, value in hostDict.items():
             destination = (key+" "+value[2])
             print(origin, destination)
+            hostCity = destination[-1]
+            studentCity = origin[-1]
+            if studentCity.lower() != hostCity.lower():
+                continue
             get_distance(origin, destination)
-            
-            
- 
-
-
-
-    
-
-
+            exit()
 
 main()
