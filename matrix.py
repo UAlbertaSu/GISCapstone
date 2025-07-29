@@ -41,9 +41,9 @@ def get_distance(origin, destination):
         }],
         "destinations": [{
             "waypoint": {
-                "address": destination  # Using destination variable
+                "address": address  # Using destination variable
             }
-        }],
+        } for address in destination],
         "travelMode": "TRANSIT",
         "transitPreferences": {
             "routingPreference": "LESS_WALKING",
@@ -101,19 +101,48 @@ def main():
     hostDict = processSheet(hostListWb, hostDict)
     print(hostDict)
     print('\n')
-    
+    travelTimeMatrix = {}
+
     # call API
     for k,v in studentDict.items():
         origin = (v[0]+" "+ v[1])
+        travelTimeMatrix[k] = {}
+        studentCity = origin.strip().split()[-1]
+        hostDestination = []
+        hostKeys = []
         for key, value in hostDict.items():
+            
             destination = (key+" "+value[2])
-            print(origin, destination)
-            hostCity = destination[-1]
-            studentCity = origin[-1]
+            
+            hostCity = destination.strip().split()[-1]
+            
             if studentCity.lower() != hostCity.lower():
                 continue
-            distance = get_distance(origin, destination)
-            print(distance)
-            exit()
+            # add additional checks here to trim calls
+
+            hostDestination.append(destination)
+            hostKeys.append(key)
+        
+        if hostDestination:
+        
+            distance = get_distance(origin, hostDestination)
+            timeToTravel =[]
+            for res in distance:
+                
+                destIndex = res['destinationIndex']
+                duration = int(res['duration'].rstrip('s'))
+                if duration < 3600:
+                    destinationKey = hostKeys[destIndex]
+                    timeToTravel.append({destinationKey: duration})
+                # destinationKey = hostKeys[destIndex]
+                # timeToTravel.append({destinationKey: duration})
+            travelTimeMatrix[k] = timeToTravel
+    
+    # print it out nicely
+    for student, locations in travelTimeMatrix.items():
+        print(f"student ID : {student}")
+        for location in locations:
+            for address, duration in location.items():
+                print(f" Address: {address.strip()} | {duration} seconds")
 
 main()
