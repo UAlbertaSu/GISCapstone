@@ -55,6 +55,7 @@ def get_distance(origin, destination):
     # Send Request
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     print(response.json())
+    return response.json()
 
 def processSheet(wb, dict):
     # parse the student ID, city and their address in dictionary
@@ -111,7 +112,8 @@ def main():
             studentCity = origin[-1]
             if studentCity.lower() != hostCity.lower():
                 continue
-            get_distance(origin, destination)
+            distance = get_distance(origin, destination)
+            print(distance)
             exit()
 
 main()
