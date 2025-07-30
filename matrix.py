@@ -54,7 +54,7 @@ def get_distance(origin, destination):
 
     # Send Request
     response = requests.post(url, headers=headers, data=json.dumps(payload))
-    print(response.json())
+    # print(response.json())
     return response.json()
 
 def processSheet(wb, dict):
@@ -93,14 +93,14 @@ def main():
     # parse the origins (student address) 
     print("Student Location \n")
     studentDict = processSheet(studentWb, studentDict)
-    print(studentDict)
-    print('\n')
-    print("Host Location \n")
+    # print(studentDict)
+    # print('\n')
+    # print("Host Location \n")
     
     # parse the destination and attributes
     hostDict = processSheet(hostListWb, hostDict)
-    print(hostDict)
-    print('\n')
+    # print(hostDict)
+    # print('\n')
     travelTimeMatrix = {}
 
     # call API
@@ -126,21 +126,31 @@ def main():
         if hostDestination:
         
             distance = get_distance(origin, hostDestination)
+            # print(distance)
             timeToTravel =[]
             for res in distance:
                 
                 destIndex = res['destinationIndex']
                 duration = int(res['duration'].rstrip('s'))
+                
                 if duration < 3600:
                     destinationKey = hostKeys[destIndex]
                     timeToTravel.append({destinationKey: duration})
-                # destinationKey = hostKeys[destIndex]
+                    # destinationKey = hostKeys[destIndex]
                 # timeToTravel.append({destinationKey: duration})
+                # check if empty.
+            if not timeToTravel:
+                shortest = min(distance, key=lambda x: int(x['duration'].rstrip('s')))
+                shortest_duration = int(shortest['duration'].rstrip('s'))
+                shortest_dest_index = shortest['destinationIndex']
+                destinationKey = hostKeys[shortest_dest_index]
+                timeToTravel.append({destinationKey: shortest_duration})
+            
             travelTimeMatrix[k] = timeToTravel
     
     # print it out nicely
     for student, locations in travelTimeMatrix.items():
-        print(f"student ID : {student}")
+        print(f"student ID : {student}, Origin: {studentDict[student][0]}, {studentDict[student][1]}")
         for location in locations:
             for address, duration in location.items():
                 print(f" Address: {address.strip()} | {duration} seconds")
