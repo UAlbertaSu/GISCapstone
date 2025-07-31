@@ -46,7 +46,7 @@ def get_distance(origin, destination):
         } for address in destination],
         "travelMode": "TRANSIT",
         "transitPreferences": {
-            "routingPreference": "LESS_WALKING",
+            # "routingPreference": "LESS_WALKING",
             "allowedTravelModes": ["BUS", "RAIL"]
         },
         "departureTime": get_next_monday_8am()
