@@ -6,7 +6,9 @@ from datetime import datetime, timedelta, timezone
 import time
 import json
 import os
+import urllib.parse 
 from dotenv import load_dotenv
+
 
 
 def get_next_monday_8am():
@@ -119,7 +121,7 @@ def main():
             if studentCity.lower() != hostCity.lower():
                 continue
             # add additional checks here to trim calls
-
+            
             hostDestination.append(destination)
             hostKeys.append(key)
         
@@ -136,9 +138,7 @@ def main():
                 if duration < 3600:
                     destinationKey = hostKeys[destIndex]
                     timeToTravel.append({destinationKey: duration})
-                    # destinationKey = hostKeys[destIndex]
-                # timeToTravel.append({destinationKey: duration})
-                # check if empty.
+                    
             if not timeToTravel:
                 shortest = min(distance, key=lambda x: int(x['duration'].rstrip('s')))
                 shortest_duration = int(shortest['duration'].rstrip('s'))
@@ -147,12 +147,18 @@ def main():
                 timeToTravel.append({destinationKey: shortest_duration})
             
             travelTimeMatrix[k] = timeToTravel
-    
-    # print it out nicely
+    print(travelTimeMatrix)
+    # print it out nicely and create a maps url 
     for student, locations in travelTimeMatrix.items():
         print(f"student ID : {student}, Origin: {studentDict[student][0]}, {studentDict[student][1]}")
+        studentAddress =  urllib.parse.urlencode({"origin" : studentDict[student][0]+","+studentDict[student][1]})
         for location in locations:
             for address, duration in location.items():
-                print(f" Address: {address.strip()} | {duration} seconds")
-
+                destinationAddress =urllib.parse.urlencode({"destination" : {address.strip()} })
+                url = "https://www.google.com/maps/dir/?api=1&"+studentAddress+ "&"+ destinationAddress+"&travelmode=transit"
+                print(f" Address: {address.strip()} | {duration} seconds | {url}")
+                
+    # Put result in Excel. 
 main()
+
+
