@@ -70,7 +70,8 @@ def processSheet(wb, dict):
             field = row
         else:
             if field[0] == "Student ID#":
-                dict[row[0]] = row[1:3]
+                studentID = int(round(row[0]))
+                dict[studentID] = row[1:3]
                 
             else:
                 hostList = list(row[:2])
@@ -203,6 +204,3 @@ def main():
     print(f"Output created in {outputPath}\{filename}")
 main()
 
-
-# C:\Users\steve\SAIT\Sem2\Capstone\Inputs\Students\ModifiedClassList.xlsx
-# C:\Users\steve\SAIT\Sem2\Capstone\Inputs\Locations\ModifiedHostList.xlsx
