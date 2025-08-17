@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 class BVCApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("BVC Student-Host Matching System")
+        self.root.title("BVC Student-Practicum Matching System")
         self.root.geometry("600x400")
         
         # Variables
